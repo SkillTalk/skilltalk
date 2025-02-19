@@ -1,10 +1,14 @@
 {
-  "routes": [{ "src": "/(.*)", "dest": "/home.html" }],
-  "builds": [
-    { "src": "home.html", "use": "@vercel/static" },
-    { "src": "css/(.*)", "use": "@vercel/static" },
-    { "src": "js/(.*)", "use": "@vercel/static" },
-    { "src": "images/(.*)", "use": "@vercel/static" }
-  ],
-  "outputDirectory": "Educational-Website"
+  "cleanUrls": true,
+  "rewrites": [{ "source": "/", "destination": "/home.html" }],
+  "headers": [
+    {
+      "source": "/css/(.*)",
+      "headers": [{ "key": "Content-Type", "value": "text/css" }]
+    },
+    {
+      "source": "/js/(.*)",
+      "headers": [{ "key": "Content-Type", "value": "application/javascript" }]
+    }
+  ]
 }
