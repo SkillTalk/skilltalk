@@ -1,0 +1,19 @@
+{
+  "name": "educational-website",
+  "version": "1.0.0",
+  "description": "<h1 align=\"center\">You can access the project <a href=\"https://brighty-nerd.vercel.app/\" target=\"_blank\">Clicking here</a></h1>",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "http": "^0.0.1-security",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {}
+}

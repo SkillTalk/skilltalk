@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Join Discussion</title>
+    <link rel="stylesheet" href="/css/join.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Join a Discussion Group</h1>
+    </header>
+
+    <main>
+      <label for="username">Enter Your Name:</label>
+      <input type="text" id="username" placeholder="Your Name" />
+
+      <label for="roomSelect">Select a Discussion Room:</label>
+      <input
+        type="text"
+        id="roomSelect"
+        placeholder="Enter room name (e.g., Python, Java)"
+      />
+
+      <button id="joinCall">Join Call</button>
+    </main>
+
+    <script>
+      document.getElementById("joinCall").addEventListener("click", () => {
+        const username = document.getElementById("username").value.trim();
+        const room = document.getElementById("roomSelect").value.trim();
+
+        if (!username || !room) {
+          alert("Please enter your name and room.");
+          return;
+        }
+
+        // Redirect to chat page with query parameters
+        window.location.href = `discussion.html?username=${encodeURIComponent(
+          username
+        )}&room=${encodeURIComponent(room)}`;
+      });
+    </script>
+    <script src="/js/join.js"></script>
+  </body>
+</html>

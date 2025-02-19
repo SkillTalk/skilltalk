@@ -1,0 +1,18 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start PeerJS Server",
+      "type": "shell",
+      "command": "peerjs --port 3001",
+      "problemMatcher": [],
+      "isBackground": true
+    },
+    {
+      "label": "Start Node Server",
+      "type": "shell",
+      "command": "node server.js",
+      "problemMatcher": []
+    }
+  ]
+}
