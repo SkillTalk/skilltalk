@@ -73,3 +73,10 @@ header {
   -o-transform: scaleX(-1);
   -ms-transform: scaleX(-1);
 }
+
+#my-video,
+.remote-video {
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+}
