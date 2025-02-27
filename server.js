@@ -99,7 +99,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // Use Render's assigned port
 server.listen(PORT, "0.0.0.0", () =>
-  console.log(`🚀 Server running at http://192.168.0.112:${PORT}`)
+  console.log(`🚀 Server running on port ${PORT}`)
 );
