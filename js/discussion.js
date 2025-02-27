@@ -1,5 +1,12 @@
-const socket = io("http://localhost:3000");
-const peer = new Peer(undefined, { host: "/", port: "3001" });
+const socket = io("http://192.168.0.112:3000", {
+  transports: ["websocket"],
+});
+const peer = new Peer(undefined, {
+  host: "192.168.0.112",
+  port: "3001",
+  path: "/",
+  debug: 3,
+});
 
 const urlParams = new URLSearchParams(window.location.search);
 const username = urlParams.get("username");
@@ -7,7 +14,7 @@ const room = urlParams.get("room");
 
 if (!username || !room) {
   alert("Invalid session! Redirecting...");
-  window.location.href = "index.html";
+  window.location.href = "https://www.skilltalk.in/"; // Update with your actual homepage or join page
 }
 
 let myStream;
@@ -15,21 +22,19 @@ let myStream;
 // Join Room
 socket.emit("joinCall", { room, username });
 
-// Update Participants List
 socket.on("userJoined", ({ users }) => {
+  console.log("📢 Received userJoined event:", users);
+
   document.getElementById("userList").innerHTML = users
     .map(
-      (user, index) =>
-        `<li><span class="participant-number">${index + 1}.</span> <strong>${
-          user.name
-        }</strong></li>`
+      (user, index) => `<li>${index + 1}. <strong>${user.name}</strong></li>`
     )
     .join("");
 
   document.getElementById("participant-count").textContent = users.length;
 });
 
-// Handle Chat Messages
+// Chat Messages
 document.getElementById("send-message").addEventListener("click", () => {
   const message = document.getElementById("chat-message").value;
   if (message.trim() !== "") {
@@ -39,85 +44,45 @@ document.getElementById("send-message").addEventListener("click", () => {
 });
 
 socket.on("receiveMessage", ({ username, message }) => {
+  console.log(`📩 Message from ${username}: ${message}`);
   document.getElementById(
     "chat-box"
   ).innerHTML += `<p><strong>${username}:</strong> ${message}</p>`;
 });
 
-// Video Call
+// Start PeerJS Video
 document.getElementById("start-video").addEventListener("click", async () => {
   try {
-    // Request video and audio permissions
     myStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: 640, height: 480 },
+      video: true,
       audio: true,
     });
 
-    // Set my video stream
     document.getElementById("my-video").srcObject = myStream;
 
-    // When PeerJS connects, send my stream to others
     peer.on("open", (id) => {
-      socket.emit("newPeer", { room, peerId: id });
+      socket.emit("peerId", { room, peerId: id });
     });
 
-    // When receiving another person's stream, display it
     peer.on("call", (call) => {
       call.answer(myStream);
       call.on("stream", (remoteStream) => {
         addRemoteVideo(remoteStream);
       });
     });
-
-    console.log("🎥 Video stream started successfully!");
   } catch (error) {
     console.error("🚨 Error starting video:", error);
-    alert(
-      "Could not access camera. Make sure it's not being used by another app."
-    );
   }
 });
 
-// When someone joins, call them with my stream
-socket.on("peerConnected", (peerId) => {
-  if (myStream) {
-    const call = peer.call(peerId, myStream);
-    call.on("stream", (remoteStream) => {
-      addRemoteVideo(remoteStream);
-    });
-  }
-});
-
-// Function to add remote video
 function addRemoteVideo(stream) {
   const videoElement = document.createElement("video");
   videoElement.srcObject = stream;
   videoElement.autoplay = true;
-  videoElement.playsInline = true;
-  videoElement.classList.add("remote-video");
   document.getElementById("remote-videos").appendChild(videoElement);
 }
 
-// Stop the video stream properly
-document.getElementById("end-video").addEventListener("click", () => {
-  if (myStream) {
-    myStream.getTracks().forEach((track) => track.stop());
-    document.getElementById("my-video").srcObject = null;
-    document.getElementById("remote-videos").innerHTML = "";
-    console.log("📴 Video call ended.");
-  }
-});
-
-// Voice Call
-document.getElementById("start-voice").addEventListener("click", async () => {
-  myStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-});
-
-document.getElementById("end-voice").addEventListener("click", () => {
-  myStream.getTracks().forEach((track) => track.stop());
-});
-
-// Leave Call
+// Start PeerJS Server
 document.getElementById("leaveCall").addEventListener("click", () => {
   socket.emit("leaveCall", { room, username });
   myStream?.getTracks().forEach((track) => track.stop());

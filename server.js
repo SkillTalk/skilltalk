@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "*",
+    origin: "*", // Allow all origins
     methods: ["GET", "POST"],
   },
 });
@@ -22,7 +22,6 @@ const rooms = {};
 io.on("connection", (socket) => {
   console.log(`✅ New user connected: ${socket.id}`);
 
-  // User joins a room
   socket.on("joinCall", ({ room, username }) => {
     if (!room || !username) return;
 
@@ -49,20 +48,20 @@ io.on("connection", (socket) => {
     }
     rooms[room].push({ id: socket.id, name: username });
 
+    console.log("🔄 Updated Users List:", rooms[room]); // Debug log
     io.to(room).emit("userJoined", { users: rooms[room] });
   });
 
   // Handle chat messages
   socket.on("sendMessage", ({ room, username, message }) => {
+    console.log(`📩 ${username} sent: ${message} in ${room}`);
     io.to(room).emit("receiveMessage", { username, message });
   });
 
-  // WebRTC signaling for video/voice calls
   socket.on("peerId", ({ room, peerId }) => {
     socket.to(room).emit("newUser", peerId);
   });
 
-  // User leaves a room
   socket.on("leaveCall", () => {
     if (!socket.currentRoom) return;
 
@@ -86,7 +85,6 @@ io.on("connection", (socket) => {
     socket.currentRoom = null;
   });
 
-  // Handle user disconnection
   socket.on("disconnect", () => {
     console.log(`🚪 User disconnected: ${socket.id}`);
 
@@ -102,6 +100,6 @@ io.on("connection", (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () =>
-  console.log(`🚀 Server running at http://localhost:${PORT}`)
+server.listen(PORT, "0.0.0.0", () =>
+  console.log(`🚀 Server running at http://192.168.0.112:${PORT}`)
 );
