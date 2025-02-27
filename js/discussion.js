@@ -76,6 +76,71 @@ document.getElementById("start-video").addEventListener("click", async () => {
   }
 });
 
+// Stop Video
+document.getElementById("end-video").addEventListener("click", () => {
+  if (myStream) {
+    myStream.getVideoTracks().forEach((track) => track.stop()); // Stop video track completely
+    document.getElementById("my-video").srcObject = null; // Remove video feed
+  }
+});
+
+// Start Voice
+document.getElementById("start-voice").addEventListener("click", async () => {
+  try {
+    console.log("🎙️ Start Voice Button Clicked!");
+
+    if (!myStream) {
+      console.log("🔄 No existing stream, requesting a new one...");
+      myStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      console.log("✅ New Audio Stream Retrieved:", myStream);
+      document.getElementById("my-video").srcObject = myStream; // Assign stream
+    } else if (myStream.getAudioTracks().length === 0) {
+      console.log(
+        "🎤 No audio track found, requesting new microphone access..."
+      );
+      const audioStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+
+      myStream.addTrack(audioStream.getAudioTracks()[0]); // Add new audio track
+      console.log("✅ Microphone started.");
+    } else {
+      console.log("✅ Enabling existing audio track...");
+      myStream.getAudioTracks().forEach((track) => (track.enabled = true));
+    }
+  } catch (error) {
+    console.error("🚨 Error starting voice:", error);
+  }
+});
+
+// Stop Voice
+document.getElementById("end-voice").addEventListener("click", () => {
+  console.log("🎤 Stop Voice Button Clicked! Checking myStream:", myStream);
+
+  if (!myStream) {
+    console.warn("🚨 No active media stream found!");
+    return;
+  }
+
+  const audioTracks = myStream.getAudioTracks();
+  console.log("🎧 Audio Tracks Found:", audioTracks);
+
+  if (audioTracks.length === 0) {
+    console.warn("🚨 No audio tracks available in myStream!");
+    return;
+  }
+
+  audioTracks.forEach((track) => {
+    console.log("🛑 Stopping Audio Track:", track);
+    track.stop(); // Completely stop the microphone
+    myStream.removeTrack(track); // Remove the track from myStream
+  });
+
+  console.log("🔇 Voice Stopped: Audio track removed.");
+});
+
+// Function to add remote video
 function addRemoteVideo(stream) {
   const videoElement = document.createElement("video");
   videoElement.srcObject = stream;
@@ -83,7 +148,7 @@ function addRemoteVideo(stream) {
   document.getElementById("remote-videos").appendChild(videoElement);
 }
 
-// Start PeerJS Server
+// Leave Call
 document.getElementById("leaveCall").addEventListener("click", () => {
   socket.emit("leaveCall", { room, username });
   myStream?.getTracks().forEach((track) => track.stop());
