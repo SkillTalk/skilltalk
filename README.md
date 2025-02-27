@@ -1,14 +1,12 @@
-<h1 align="center">You can access the project <a href="https://brighty-nerd.vercel.app/" target="_blank">Clicking here</a></h1>
-
+<h1 align="center">You can access the project <a href="https://skilltalk-i90z0nlsd-skill-talks-projects.vercel.app/" target="_blank">Clicking here</a></h1>
 
 ---
 
 </br>
 
-
 ## Description
 
-Welcome to Educational Website! This is a educational website using HTML, CSS, and JavaScript to facilitate seamless navigation and optimal user experience. Dedicated blog section, allowing students to access and refer to study materials, articles, and educational resources •	Designed a user-friendly frontend with HTML and CSS to create an intuitive and visually appealing layout for courses. Responsive on various devices.
+Welcome to Educational Website! This is a educational website using HTML, CSS, and JavaScript to facilitate seamless navigation and optimal user experience. Dedicated blog section, allowing students to access and refer to study materials, articles, and educational resources • Designed a user-friendly frontend with HTML and CSS to create an intuitive and visually appealing layout for courses. Responsive on various devices.
 
 ## Table of Contents
 
@@ -17,12 +15,14 @@ Welcome to Educational Website! This is a educational website using HTML, CSS, a
 - [Contributing](#contributing)
 - [License](#license)
 
-# Installation 
+# Installation
+
 installation command
-<br/>  git clone <"https://github.com/Techwolf78/Educational-Website">
+<br/> git clone <"https://github.com/SkillTalk/skilltalk.git">
 
 # Usage
-For Students to learn and grow by having access to wide study materials. 
+
+For Students to learn and grow by having access to wide study materials.
 
 # Contributing to Educational Website
 
@@ -34,5 +34,5 @@ We welcome contributions from the community! To contribute, follow these steps:
 4. Ensure your code passes the tests and adheres to the coding standards.
 
 # License
-This project is licensed under the [Your License] - see the [LICENSE.md](LICENSE.md) file for details.
 
+This project is licensed under the [Your License] - see the [LICENSE.md](LICENSE.md) file for details.
