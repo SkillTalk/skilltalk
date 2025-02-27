@@ -1,6 +1,7 @@
-const socket = io("http://192.168.0.112:3000", {
+const socket = io("https://skilltalk-backend.onrender.com", {
   transports: ["websocket"],
 });
+
 const peer = new Peer(undefined, {
   host: "192.168.0.112",
   port: "3001",
