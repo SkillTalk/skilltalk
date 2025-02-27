@@ -5,13 +5,10 @@ const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
-
 const io = socketIo(server, {
   cors: {
-    origin: ["https://skilltalk.vercel.app"], // Allow only your Vercel frontend
+    origin: "*",
     methods: ["GET", "POST"],
-    credentials: true,
-    allowedHeaders: ["Content-Type"],
   },
 });
 
@@ -25,13 +22,11 @@ const rooms = {};
 io.on("connection", (socket) => {
   console.log(`✅ New user connected: ${socket.id}`);
 
+  // User joins a room
   socket.on("joinCall", ({ room, username }) => {
     if (!room || !username) return;
 
-    console.log(
-      `📢 ${username} (${socket.id}) attempting to join room: ${room}`
-    );
-
+    // Leave previous room if exists
     if (socket.currentRoom) {
       socket.leave(socket.currentRoom);
       if (rooms[socket.currentRoom]) {
@@ -44,6 +39,7 @@ io.on("connection", (socket) => {
       }
     }
 
+    console.log(`📢 ${username} (${socket.id}) joined room: ${room}`);
     socket.join(room);
     socket.currentRoom = room;
     socket.username = username;
@@ -53,21 +49,20 @@ io.on("connection", (socket) => {
     }
     rooms[room].push({ id: socket.id, name: username });
 
-    console.log(`✅ ${username} joined ${room}. Current users:`, rooms[room]);
-
     io.to(room).emit("userJoined", { users: rooms[room] });
   });
 
+  // Handle chat messages
   socket.on("sendMessage", ({ room, username, message }) => {
-    console.log(`💬 ${username} in ${room}: ${message}`);
     io.to(room).emit("receiveMessage", { username, message });
   });
 
+  // WebRTC signaling for video/voice calls
   socket.on("peerId", ({ room, peerId }) => {
-    console.log(`📡 ${socket.username} shared peerId: ${peerId} in ${room}`);
     socket.to(room).emit("newUser", peerId);
   });
 
+  // User leaves a room
   socket.on("leaveCall", () => {
     if (!socket.currentRoom) return;
 
@@ -91,6 +86,7 @@ io.on("connection", (socket) => {
     socket.currentRoom = null;
   });
 
+  // Handle user disconnection
   socket.on("disconnect", () => {
     console.log(`🚪 User disconnected: ${socket.id}`);
 
