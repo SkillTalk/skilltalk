@@ -1,4 +1,4 @@
-const socket = io("http://localhost:3000");
+const socket = io("http://192.168.0.112:3000");
 const peer = new Peer(undefined, { host: "/", port: "3001" });
 
 const urlParams = new URLSearchParams(window.location.search);
