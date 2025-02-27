@@ -25,7 +25,6 @@ const rooms = {};
 io.on("connection", (socket) => {
   console.log(`✅ New user connected: ${socket.id}`);
 
-  // User joins a room
   socket.on("joinCall", ({ room, username }) => {
     if (!room || !username) return;
 
@@ -33,7 +32,6 @@ io.on("connection", (socket) => {
       `📢 ${username} (${socket.id}) attempting to join room: ${room}`
     );
 
-    // Leave previous room if exists
     if (socket.currentRoom) {
       socket.leave(socket.currentRoom);
       if (rooms[socket.currentRoom]) {
@@ -60,19 +58,16 @@ io.on("connection", (socket) => {
     io.to(room).emit("userJoined", { users: rooms[room] });
   });
 
-  // Handle chat messages
   socket.on("sendMessage", ({ room, username, message }) => {
     console.log(`💬 ${username} in ${room}: ${message}`);
     io.to(room).emit("receiveMessage", { username, message });
   });
 
-  // WebRTC signaling for video/voice calls
   socket.on("peerId", ({ room, peerId }) => {
     console.log(`📡 ${socket.username} shared peerId: ${peerId} in ${room}`);
     socket.to(room).emit("newUser", peerId);
   });
 
-  // User leaves a room
   socket.on("leaveCall", () => {
     if (!socket.currentRoom) return;
 
@@ -96,7 +91,6 @@ io.on("connection", (socket) => {
     socket.currentRoom = null;
   });
 
-  // Handle user disconnection
   socket.on("disconnect", () => {
     console.log(`🚪 User disconnected: ${socket.id}`);
 

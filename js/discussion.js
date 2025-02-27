@@ -1,5 +1,5 @@
 const socket = io("https://skilltalk.vercel.app", {
-  transports: ["websocket"], // Force WebSocket only
+  transports: ["websocket"], // Ensure stable WebSocket connection
 });
 
 const peer = new Peer(undefined, { host: "/", port: "3001" });
@@ -15,12 +15,11 @@ if (!username || !room) {
 
 let myStream;
 
-// Debug: Check if connected
+// Debug: Ensure WebSocket is connecting
 socket.on("connect", () => {
   console.log("✅ Connected to WebSocket server.");
 });
 
-// Join Room
 console.log("📢 Attempting to join room:", room, "as", username);
 socket.emit("joinCall", { room, username });
 
