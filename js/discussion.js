@@ -145,6 +145,7 @@ function addRemoteVideo(stream) {
   const videoElement = document.createElement("video");
   videoElement.srcObject = stream;
   videoElement.autoplay = true;
+  videoElement.style.transform = "none"; // Ensure remote video is NOT mirrored
   document.getElementById("remote-videos").appendChild(videoElement);
 }
 

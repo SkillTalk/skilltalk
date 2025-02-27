@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "*", // Allow all origins
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
@@ -48,7 +48,7 @@ io.on("connection", (socket) => {
     }
     rooms[room].push({ id: socket.id, name: username });
 
-    console.log("🔄 Updated Users List:", rooms[room]); // Debug log
+    console.log("🔄 Updated Users List:", rooms[room]);
     io.to(room).emit("userJoined", { users: rooms[room] });
   });
 
@@ -58,8 +58,15 @@ io.on("connection", (socket) => {
     io.to(room).emit("receiveMessage", { username, message });
   });
 
+  // Handle PeerJS ID exchange
   socket.on("peerId", ({ room, peerId }) => {
     socket.to(room).emit("newUser", peerId);
+  });
+
+  // Notify other users when a stream starts
+  socket.on("newStream", ({ room, peerId, streamType }) => {
+    console.log(`📡 New ${streamType} started in ${room}`);
+    socket.to(room).emit("updateStream", { peerId, streamType });
   });
 
   socket.on("leaveCall", () => {
