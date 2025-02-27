@@ -1,4 +1,4 @@
-const socket = io("https://skilltalk-backend.onrender.com", {
+const socket = io("https://skilltalk-backend.up.railway.app", {
   transports: ["websocket"],
 });
 
