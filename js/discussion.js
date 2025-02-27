@@ -1,4 +1,7 @@
-const socket = io("http://localhost:3000");
+const socket = io("https://skilltalk.vercel.app", {
+  transports: ["websocket"], // Force WebSocket only
+});
+
 const peer = new Peer(undefined, { host: "/", port: "3001" });
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -12,11 +15,19 @@ if (!username || !room) {
 
 let myStream;
 
+// Debug: Check if connected
+socket.on("connect", () => {
+  console.log("✅ Connected to WebSocket server.");
+});
+
 // Join Room
+console.log("📢 Attempting to join room:", room, "as", username);
 socket.emit("joinCall", { room, username });
 
 // Update Participants List
 socket.on("userJoined", ({ users }) => {
+  console.log("✅ Received userJoined event. Users:", users);
+
   document.getElementById("userList").innerHTML = users
     .map(
       (user, index) =>
@@ -32,6 +43,8 @@ socket.on("userJoined", ({ users }) => {
 // Handle Chat Messages
 document.getElementById("send-message").addEventListener("click", () => {
   const message = document.getElementById("chat-message").value;
+  console.log("📤 Sending message:", message);
+
   if (message.trim() !== "") {
     socket.emit("sendMessage", { room, username, message });
     document.getElementById("chat-message").value = "";
@@ -39,6 +52,8 @@ document.getElementById("send-message").addEventListener("click", () => {
 });
 
 socket.on("receiveMessage", ({ username, message }) => {
+  console.log("💬 New message from", username, ":", message);
+
   document.getElementById(
     "chat-box"
   ).innerHTML += `<p><strong>${username}:</strong> ${message}</p>`;
@@ -47,27 +62,16 @@ socket.on("receiveMessage", ({ username, message }) => {
 // Video Call
 document.getElementById("start-video").addEventListener("click", async () => {
   try {
-    // Request video and audio permissions
     myStream = await navigator.mediaDevices.getUserMedia({
       video: { width: 640, height: 480 },
       audio: true,
     });
 
-    // Set my video stream
-    document.getElementById("my-video").srcObject = myStream;
-
-    // When PeerJS connects, send my stream to others
-    peer.on("open", (id) => {
-      socket.emit("newPeer", { room, peerId: id });
-    });
-
-    // When receiving another person's stream, display it
-    peer.on("call", (call) => {
-      call.answer(myStream);
-      call.on("stream", (remoteStream) => {
-        addRemoteVideo(remoteStream);
-      });
-    });
+    const videoElement = document.getElementById("my-video");
+    videoElement.srcObject = myStream;
+    videoElement.muted = true;
+    videoElement.playsInline = true;
+    videoElement.autoplay = true;
 
     console.log("🎥 Video stream started successfully!");
   } catch (error) {
@@ -80,6 +84,8 @@ document.getElementById("start-video").addEventListener("click", async () => {
 
 // When someone joins, call them with my stream
 socket.on("peerConnected", (peerId) => {
+  console.log("📡 New peer connected:", peerId);
+
   if (myStream) {
     const call = peer.call(peerId, myStream);
     call.on("stream", (remoteStream) => {
@@ -106,15 +112,6 @@ document.getElementById("end-video").addEventListener("click", () => {
     document.getElementById("remote-videos").innerHTML = "";
     console.log("📴 Video call ended.");
   }
-});
-
-// Voice Call
-document.getElementById("start-voice").addEventListener("click", async () => {
-  myStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-});
-
-document.getElementById("end-voice").addEventListener("click", () => {
-  myStream.getTracks().forEach((track) => track.stop());
 });
 
 // Leave Call
