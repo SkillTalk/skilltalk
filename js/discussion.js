@@ -1,5 +1,5 @@
 const socket = io("https://skilltalk-production.up.railway.app", {
-  transports: ["websocket"],
+  transports: ["websocket", "polling"],
 });
 
 const peer = new Peer(undefined, {
