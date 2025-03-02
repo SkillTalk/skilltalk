@@ -80,3 +80,9 @@ header {
   border-radius: 10px;
   margin-top: 10px;
 }
+
+button img {
+  background-color: white;
+  padding: 5px;
+  border-radius: 20%; /* Optional for round shape */
+}

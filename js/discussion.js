@@ -1,9 +1,15 @@
-const socket = io("https://skilltalk-production.up.railway.app", {
-  transports: ["websocket", "polling"],
-});
+// Check if running on local or live website
+const isLocal =
+  window.location.hostname === "127.0.0.1" ||
+  window.location.hostname === "localhost";
+
+// Use local or live backend accordingly
+const socket = isLocal
+  ? io("http://localhost:3000") // Local Backend
+  : io("https://skilltalk-production.up.railway.app"); // Live Backend
 
 const peer = new Peer(undefined, {
-  host: "192.168.0.112",
+  host: isLocal ? "localhost" : "192.168.0.112", // Change PeerJS host if needed
   port: "3001",
   path: "/",
   debug: 3,
@@ -11,11 +17,16 @@ const peer = new Peer(undefined, {
 
 const urlParams = new URLSearchParams(window.location.search);
 const username = urlParams.get("username");
-const room = urlParams.get("room");
+
+// Use a separate test room for local testing
+let room = urlParams.get("room");
+if (isLocal) {
+  room = room + "-test"; // Append "-test" to room name when testing locally
+}
 
 if (!username || !room) {
   alert("Invalid session! Redirecting...");
-  window.location.href = "https://www.skilltalk.in/"; // Update with your actual homepage or join page
+  window.location.href = "https://www.skilltalk.in/";
 }
 
 let myStream;
